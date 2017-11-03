@@ -66,6 +66,14 @@ public class PlayerSelf : Player
         CardManager._instance.SetBidButtonActive(true);
     }
     /// <summary>
+    /// 开始出牌
+    /// </summary>
+    public override void ToFollowing()
+    {
+        base.ToFollowing();
+        CardManager._instance.SetFollowButtonActive(true);
+    }
+    /// <summary>
     /// 点击卡牌处理
     /// </summary>
     /// <param name="data"></param>

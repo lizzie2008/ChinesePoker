@@ -11,6 +11,7 @@ using UnityEngine;
 /// </summary>
 public class CardManager : MonoBehaviour
 {
+    #region 初始化
     public static CardManager _instance;    //单例
 
 
@@ -21,27 +22,32 @@ public class CardManager : MonoBehaviour
     public GameObject cardPrefab;      //背面排预制件
     public Transform heapPos;           //牌堆位置
     public Transform[] playerHeapPos;    //玩家牌堆位置
-    public CardManagerStates cardManagerState;
+    public CardManagerStates cardManagerState;  //卡牌回合状态
 
     private string[] cardNames;  //所有牌集合
     private int termStartIndex;  //回合开始玩家索引
     private int termCurrentIndex;  //回合当前玩家索引
     private int bankerIndex;        //当前地主索引
-    private GameObject bidBtns;
-    private GameObject startBtn;
-    private GameObject bidCards;
+    private GameObject bidBtns;     //玩家叫牌按钮
+    private GameObject followBtns;  //玩家出牌按钮
+    private GameObject startBtn;    //开始游戏按钮
+    private GameObject bidCards;    //地主牌
 
     void Awake()
     {
         _instance = this;
         cardNames = GetCardNames();
 
-        startBtn = GameObject.Find("StartBtn");
-        bidBtns = GameObject.Find("BidBtns");
-        bidBtns.SetActive(false);
-        bidCards = GameObject.Find("BidCards");
-        bidCards.SetActive(false);
+        GameObject root = GameObject.Find("Root");
+
+        startBtn = root.transform.Find("StartBtn").gameObject;
+        bidBtns = root.transform.Find("BidBtns").gameObject;
+        followBtns = root.transform.Find("FollowBtns").gameObject;
+        bidCards = root.transform.Find("BidCards").gameObject;
     }
+    #endregion
+
+    #region 洗牌、发牌
     /// <summary>
     /// 洗牌
     /// </summary>
@@ -132,18 +138,10 @@ public class CardManager : MonoBehaviour
                 //显示玩家手牌
                 ShowPlayerSelfCards();
             }
-            cardManagerState = CardManagerStates.Playing;
+            StartFollowing();
         }
     }
-    /// <summary>
-    /// 开始抢地主
-    /// </summary>
-    private void StartBiding()
-    {
-        cardManagerState = CardManagerStates.Bid;
 
-        Players[termCurrentIndex].ToBiding();
-    }
     /// <summary>
     /// 显示玩家手牌
     /// </summary>
@@ -177,6 +175,36 @@ public class CardManager : MonoBehaviour
         });
     }
     /// <summary>
+    /// 加载所有卡牌名
+    /// </summary>
+    /// <returns></returns>
+    private string[] GetCardNames()
+    {
+        //路径  
+        string fullPath = "Assets/Resources/Images/Cards/";
+
+        if (Directory.Exists(fullPath))
+        {
+            DirectoryInfo direction = new DirectoryInfo(fullPath);
+            FileInfo[] files = direction.GetFiles("*.png", SearchOption.AllDirectories);
+
+            return files.Select(s => Path.GetFileNameWithoutExtension(s.Name)).ToArray();
+        }
+        return null;
+    }
+    #endregion
+
+    #region 叫牌逻辑
+    /// <summary>
+    /// 开始抢地主
+    /// </summary>
+    private void StartBiding()
+    {
+        cardManagerState = CardManagerStates.Bid;
+
+        Players[termCurrentIndex].ToBiding();
+    }
+    /// <summary>
     /// 叫地主
     /// </summary>
     public void ForBid()
@@ -198,13 +226,57 @@ public class CardManager : MonoBehaviour
         SetNextPlayer();
         Players[termCurrentIndex].ToBiding();
     }
+    #endregion
+    
+    #region 出牌逻辑
     /// <summary>
-    /// 控制叫地主按钮是否显示
+    /// 开始出牌阶段
+    /// </summary>
+    private void StartFollowing()
+    {
+        cardManagerState = CardManagerStates.Playing;
+        //地主先出牌
+        Players[bankerIndex].ToFollowing();
+    }
+    /// <summary>
+    /// 玩家出牌
+    /// </summary>
+    public void ForFollow()
+    {
+        SetFollowButtonActive(false);
+
+        //TODO:出牌
+
+        SetNextPlayer();
+        Players[termCurrentIndex].ToFollowing();
+    }
+    /// <summary>
+    /// 玩家不出
+    /// </summary>
+    public void NotFollow()
+    {
+        SetFollowButtonActive(false);
+        SetNextPlayer();
+        Players[termCurrentIndex].ToFollowing();
+    }
+    #endregion
+
+    #region 控制隐藏和显示
+    /// <summary>
+    /// 控制叫牌按钮是否显示
     /// </summary>
     /// <param name="isActive"></param>
     public void SetBidButtonActive(bool isActive)
     {
         bidBtns.SetActive(isActive);
+    }
+    /// <summary>
+    /// 控制出牌按钮是否显示
+    /// </summary>
+    /// <param name="isActive"></param>
+    public void SetFollowButtonActive(bool isActive)
+    {
+        followBtns.SetActive(isActive);
     }
     /// <summary>
     /// 控制开始游戏按钮是否显示
@@ -222,6 +294,18 @@ public class CardManager : MonoBehaviour
     {
         bidCards.SetActive(isActive);
     }
+    #endregion
+
+    #region 卡牌回合控制
+    //开始新回合
+    public void OnStartTermClick()
+    {
+        //清空手牌、重新洗牌、开始发牌
+        ClearCards();
+        ShuffleCards();
+        StartCoroutine(DealCards());
+        SetStartButtonActive(false);
+    }
     /// <summary>
     /// 设置下一轮开始玩家
     /// </summary>
@@ -237,29 +321,6 @@ public class CardManager : MonoBehaviour
     {
         termCurrentIndex = (termCurrentIndex + 1) % Players.Length;
     }
-    private string[] GetCardNames()
-    {
-        //路径  
-        string fullPath = "Assets/Resources/Images/Cards/";
 
-        if (Directory.Exists(fullPath))
-        {
-            DirectoryInfo direction = new DirectoryInfo(fullPath);
-            FileInfo[] files = direction.GetFiles("*.png", SearchOption.AllDirectories);
-
-            return files.Select(s => Path.GetFileNameWithoutExtension(s.Name)).ToArray();
-        }
-        return null;
-    }
-
-    //开始新回合
-    public void OnStartTermClick()
-    {
-        //清空手牌、重新洗牌、开始发牌
-        ClearCards();
-        ShuffleCards();
-        StartCoroutine(DealCards());
-        SetStartButtonActive(false);
-    }
-
+    #endregion
 }

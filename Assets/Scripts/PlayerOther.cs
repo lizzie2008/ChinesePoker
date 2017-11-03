@@ -7,13 +7,27 @@ public class PlayerOther : Player
         //如果当前是自己回合，模拟对手叫牌
         if (isMyTerm)
         {
-            if (Input.GetKeyDown(KeyCode.Q))    //叫牌
+            if (CardManager._instance.cardManagerState == CardManagerStates.Bid)
             {
-                ForBid();
+                if (Input.GetKeyDown(KeyCode.Q))    //叫牌
+                {
+                    ForBid();
+                }
+                if (Input.GetKeyDown(KeyCode.W))    //不叫
+                {
+                    NotBid();
+                }
             }
-            if (Input.GetKeyDown(KeyCode.W))    //不叫
+            if (CardManager._instance.cardManagerState == CardManagerStates.Playing)
             {
-                NotBid();
+                if (Input.GetKeyDown(KeyCode.Q))    //出牌
+                {
+                    ForFollow();
+                }
+                if (Input.GetKeyDown(KeyCode.W))    //不出
+                {
+                    NotFollow();
+                }
             }
         }
     }

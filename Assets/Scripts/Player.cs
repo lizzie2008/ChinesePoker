@@ -18,6 +18,7 @@ public abstract class Player : MonoBehaviour
         countDownText = transform.Find("CountDown/Text").GetComponent<Text>();
     }
 
+    #region 卡牌管理
     /// <summary>
     /// 增加一张卡牌
     /// </summary>
@@ -34,11 +35,26 @@ public abstract class Player : MonoBehaviour
     {
         cardInfos.Clear();
     }
-
     /// <summary>
-    /// 用户考虑时间
+    /// 卡牌排序（从大到小）
     /// </summary>
-    private IEnumerator Considerating()
+    protected void Sort()
+    {
+        cardInfos.Sort();
+        cardInfos.Reverse();
+    }
+    #endregion
+
+    #region 倒计时
+    private enum CountDownTypes
+    {
+        Bid,
+        Follow
+    }
+    /// <summary>
+    /// 用户考虑是否叫牌中
+    /// </summary>
+    private IEnumerator BidConsiderating()
     {
         //倒计时
         var time = consideratingTime;
@@ -52,6 +68,57 @@ public abstract class Player : MonoBehaviour
         NotBid();
     }
     /// <summary>
+    /// 用户考虑是否出牌中
+    /// </summary>
+    private IEnumerator FollowConsiderating()
+    {
+        //倒计时
+        var time = consideratingTime;
+        while (time > 0)
+        {
+            countDownText.text = time.ToString();
+
+            yield return new WaitForSeconds(1);
+            time--;
+        }
+        NotFollow();
+    }
+    /// <summary>
+    /// 开始倒计时
+    /// </summary>
+    private void StartCountDown(CountDownTypes countDownType)
+    {
+        countDownText.transform.parent.gameObject.SetActive(true);
+        if (countDownType == CountDownTypes.Bid)
+        {
+            StartCoroutine("BidConsiderating");
+        }
+        if (countDownType == CountDownTypes.Follow)
+        {
+            StartCoroutine("FollowConsiderating");
+        }
+    }
+    /// <summary>
+    /// 停止倒计时
+    /// </summary>
+    private void StopCountDown(CountDownTypes countDownType)
+    {
+        print("Stop FollowConsiderating");
+
+        countDownText.transform.parent.gameObject.SetActive(false);
+        if (countDownType == CountDownTypes.Bid)
+        {
+            StopCoroutine("BidConsiderating");
+        }
+        if (countDownType == CountDownTypes.Follow)
+        {
+            StopCoroutine("FollowConsiderating");
+        }
+    }
+    #endregion
+
+    #region 叫牌逻辑
+    /// <summary>
     /// 开始叫地主
     /// </summary>
     public virtual void ToBiding()
@@ -59,8 +126,7 @@ public abstract class Player : MonoBehaviour
         isMyTerm = true;
 
         //开始倒计时
-        countDownText.transform.parent.gameObject.SetActive(true);
-        StartCoroutine("Considerating");
+        StartCountDown(CountDownTypes.Bid);
     }
     /// <summary>
     /// 抢地主
@@ -68,8 +134,7 @@ public abstract class Player : MonoBehaviour
     public void ForBid()
     {
         //关闭倒计时
-        countDownText.transform.parent.gameObject.SetActive(false);
-        StopCoroutine("Considerating");
+        StopCountDown(CountDownTypes.Bid);
 
         CardManager._instance.ForBid();
         isMyTerm = false;
@@ -80,20 +145,51 @@ public abstract class Player : MonoBehaviour
     public void NotBid()
     {
         //关闭倒计时
-        countDownText.transform.parent.gameObject.SetActive(false);
-        StopCoroutine("Considerating");
+        StopCountDown(CountDownTypes.Bid);
 
         CardManager._instance.NotBid();
         isMyTerm = false;
     }
+
+    #endregion
+
+    #region 出牌逻辑
     /// <summary>
-    /// 卡牌排序（从大到小）
+    /// 开始出牌
     /// </summary>
-    protected void Sort()
+    public virtual void ToFollowing()
     {
-        cardInfos.Sort();
-        cardInfos.Reverse();
+        isMyTerm = true;
+
+        //关闭倒计时
+        StopCountDown(CountDownTypes.Follow);
+
+        //开始倒计时
+        StartCountDown(CountDownTypes.Follow);
     }
+    /// <summary>
+    /// 出牌
+    /// </summary>
+    public void ForFollow()
+    {
+        //关闭倒计时
+        StopCountDown(CountDownTypes.Follow);
+
+        CardManager._instance.ForFollow();
+        isMyTerm = false;
+    }
+    /// <summary>
+    /// 不出
+    /// </summary>
+    public void NotFollow()
+    {
+        //关闭倒计时
+        StopCountDown(CountDownTypes.Follow);
+
+        CardManager._instance.NotFollow();
+        isMyTerm = false;
+    }
+    #endregion
 
 }
 
