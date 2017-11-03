@@ -103,8 +103,6 @@ public abstract class Player : MonoBehaviour
     /// </summary>
     private void StopCountDown(CountDownTypes countDownType)
     {
-        print("Stop FollowConsiderating");
-
         countDownText.transform.parent.gameObject.SetActive(false);
         if (countDownType == CountDownTypes.Bid)
         {
