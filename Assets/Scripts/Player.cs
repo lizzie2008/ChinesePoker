@@ -9,7 +9,8 @@ public abstract class Player : MonoBehaviour
 
     private Text cardCoutText;
     private Text countDownText;
-    private int consideratingTime = 6; //玩家考虑时间
+    private int consideratingBidTime = 12; //玩家考虑时间
+    private int consideratingFollowTime = 20; //玩家考虑时间
     protected bool isMyTerm = false;  //当前是否是自己回合
 
     void Start()
@@ -57,7 +58,7 @@ public abstract class Player : MonoBehaviour
     private IEnumerator BidConsiderating()
     {
         //倒计时
-        var time = consideratingTime;
+        var time = consideratingBidTime;
         while (time > 0)
         {
             countDownText.text = time.ToString();
@@ -73,7 +74,7 @@ public abstract class Player : MonoBehaviour
     private IEnumerator FollowConsiderating()
     {
         //倒计时
-        var time = consideratingTime;
+        var time = consideratingFollowTime;
         while (time > 0)
         {
             countDownText.text = time.ToString();
