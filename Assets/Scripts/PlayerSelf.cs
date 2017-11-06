@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class PlayerSelf : Player
 {
-    public GameObject prefab;   //预制件
+    public GameObject prefabBig;   //预制件
 
     private Transform originPos1; //牌的初始位置
     private Transform originPos2; //牌的初始位置
@@ -36,7 +36,7 @@ public class PlayerSelf : Player
         for (int i = 0; i < cardInfos.Count; i++)
         {
             //生成卡牌
-            var card = Instantiate(prefab, originPos1.position, Quaternion.identity, transform);
+            var card = Instantiate(prefabBig, originPos1.position, Quaternion.identity, transform);
             card.GetComponent<RectTransform>().localScale = Vector3.one * 0.6f;
             card.GetComponent<Card>().InitImage(cardInfos[i]);
             card.transform.SetAsLastSibling();

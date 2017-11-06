@@ -22,6 +22,9 @@ public class PlayerOther : Player
             {
                 if (Input.GetKeyDown(KeyCode.Q))    //出牌
                 {
+                    var rd1 = Random.Range(0, cardInfos.Count);
+                    cardInfos[rd1].isSelected = true;
+
                     ForFollow();
                 }
                 if (Input.GetKeyDown(KeyCode.W))    //不出

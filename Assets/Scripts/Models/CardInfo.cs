@@ -6,6 +6,8 @@ public class CardInfo : IComparable
     public string cardName; //卡牌图片名
     public CardTypes cardType; //牌的类型
     public int cardIndex;      //牌在所在类型的索引1-13
+    public bool isSelected;    //是否选中
+
 
     public CardInfo(string cardName)
     {

@@ -1,17 +1,24 @@
 ﻿using DG.Tweening;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
     private Image image;        //牌的图片
     private CardInfo cardInfo;  //卡牌信息
-    private bool isSelected;    //是否选中
+    private float offsetY;
 
     void Awake()
     {
         image = GetComponent<Image>();
+
+        //计算世界坐标系移动的位置
+        var distance = GetComponent<RectTransform>().sizeDelta.y / 10;
+        var pos1 = transform.position;
+        var pos2 = transform.position + Vector3.up * distance;
+        var pos11 = transform.TransformPoint(pos1);
+        var pos22 = transform.TransformPoint(pos2);
+        offsetY = pos22.y - pos11.y;
     }
 
     /// <summary>
@@ -30,15 +37,15 @@ public class Card : MonoBehaviour
     {
         if (!DOTween.IsTweening(transform))
         {
-            if (isSelected)
+            if (cardInfo.isSelected)
             {
-                transform.DOMoveY(transform.position.y - 10f, 0.5f);
+                transform.DOMoveY(transform.position.y - offsetY, 0.5f);
             }
             else
             {
-                transform.DOMoveY(transform.position.y + 10f, 0.5f);
+                transform.DOMoveY(transform.position.y + offsetY, 0.5f);
             }
-            isSelected = !isSelected;
+            cardInfo.isSelected = !cardInfo.isSelected;
         }
 
     }

@@ -147,6 +147,9 @@ public class CardManager : MonoBehaviour
     /// </summary>
     private void ShowPlayerSelfCards()
     {
+        //销毁玩家手牌
+        DestroyPlayerSelfCards();
+
         Players.ToList().ForEach(s =>
         {
             var player0 = s as PlayerSelf;
@@ -164,7 +167,15 @@ public class CardManager : MonoBehaviour
         //清空所有玩家卡牌
         Players.ToList().ForEach(s => s.DropCards());
 
-        //显示玩家手牌
+        //销毁玩家手牌
+        DestroyPlayerSelfCards();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    private void DestroyPlayerSelfCards()
+    {
+        //销毁玩家手牌
         Players.ToList().ForEach(s =>
         {
             var player0 = s as PlayerSelf;
@@ -227,7 +238,7 @@ public class CardManager : MonoBehaviour
         Players[termCurrentIndex].ToBiding();
     }
     #endregion
-    
+
     #region 出牌逻辑
     /// <summary>
     /// 开始出牌阶段
@@ -245,7 +256,10 @@ public class CardManager : MonoBehaviour
     {
         SetFollowButtonActive(false);
 
-        //TODO:出牌
+        //上轮玩家出牌清空
+        Players[(termCurrentIndex + Players.Length - 1) % 3].DropAllSmallCards();
+        if (Players[termCurrentIndex] is PlayerSelf)
+            ShowPlayerSelfCards();
 
         SetNextPlayer();
         Players[termCurrentIndex].ToFollowing();
@@ -256,6 +270,10 @@ public class CardManager : MonoBehaviour
     public void NotFollow()
     {
         SetFollowButtonActive(false);
+
+        //上轮玩家出牌清空
+        Players[(termCurrentIndex + Players.Length - 1) % 3].DropAllSmallCards();
+
         SetNextPlayer();
         Players[termCurrentIndex].ToFollowing();
     }
