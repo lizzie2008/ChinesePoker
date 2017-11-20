@@ -57,9 +57,11 @@ namespace Assets.Scripts.Models.FollowCards
                 }
                 return null;
             }
+
             else if (cardInfos.Count >= 5)  //顺子
             {
                 var count = handCardInfos.Count - cardInfos.Count;
+
                 if (count >= 0)
                 {
                     //手牌比牌组多count，则有count + 1可能满足牌组
@@ -68,6 +70,7 @@ namespace Assets.Scripts.Models.FollowCards
                         var mayBiggerCardInfos = handCardInfos.Skip(i).Take(cardInfos.Count).ToList();
                         //是顺子，且最小的牌比要比较的牌组最小牌要大
                         if (Validate(mayBiggerCardInfos) && mayBiggerCardInfos[0].CompareTo(cardInfos[0]) > 0 && mayBiggerCardInfos[0].cardIndex != cardInfos[0].cardIndex)
+
                         {
                             return mayBiggerCardInfos;
                         }
