@@ -37,3 +37,31 @@ public enum CardManagerStates
     //出牌
     Playing
 }
+
+public enum FollowCardsTypes
+{
+    /// <summary>
+    /// 单牌
+    /// </summary>
+    Single,
+    /// <summary>
+    /// 对子
+    /// </summary>
+    Double,
+    /// <summary>
+    /// 3带1
+    /// </summary>
+    ThreeWithOne,
+    /// <summary>
+    /// 3带2
+    /// </summary>
+    ThreeWithTwo,
+    /// <summary>
+    /// 炸弹
+    /// </summary>
+    Bomb,
+    /// <summary>
+    /// 火箭
+    /// </summary>
+    Rocket
+}

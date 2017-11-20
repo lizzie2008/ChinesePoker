@@ -5,7 +5,7 @@ public class CardInfo : IComparable
 {
     public string cardName; //卡牌图片名
     public CardTypes cardType; //牌的类型
-    public int cardIndex;      //牌在所在类型的索引1-13
+    public int cardIndex;      //牌在所在类型的索引3-10,J,Q,K,A,2(0-12)
     public bool isSelected;    //是否选中
 
 
@@ -18,23 +18,23 @@ public class CardInfo : IComparable
         {
             case "1":
                 cardType = CardTypes.Hearts;
-                cardIndex = int.Parse(splits[2]);
+                cardIndex = (int.Parse(splits[2]) + 10) % 13;
                 break;
             case "2":
                 cardType = CardTypes.Spades;
-                cardIndex = int.Parse(splits[2]);
+                cardIndex = (int.Parse(splits[2]) + 10) % 13;
                 break;
             case "3":
                 cardType = CardTypes.Diamonds;
-                cardIndex = int.Parse(splits[2]);
+                cardIndex = (int.Parse(splits[2]) + 10) % 13;
                 break;
             case "4":
                 cardType = CardTypes.Clubs;
-                cardIndex = int.Parse(splits[2]);
+                cardIndex = (int.Parse(splits[2]) + 10) % 13;
                 break;
             case "joker":
                 cardType = CardTypes.Joker;
-                cardIndex = int.Parse(splits[2]);
+                cardIndex = (int.Parse(splits[2]) + 10) % 13;
                 break;
             default:
                 throw new Exception(string.Format("卡牌文件名{0}非法！", cardName));
@@ -72,15 +72,12 @@ public class CardInfo : IComparable
             else
             {
                 //计算牌力
-                var thisNewIndex = (cardIndex == 1 || cardIndex == 2) ? 13 + cardIndex : cardIndex;
-                var otherNewIndex = (other.cardIndex == 1 || other.cardIndex == 2) ? 13 + other.cardIndex : other.cardIndex;
-
-                if (thisNewIndex == otherNewIndex)
+                if (cardIndex == other.cardIndex)
                 {
                     return -cardType.CompareTo(other.cardType);
                 }
 
-                return thisNewIndex.CompareTo(otherNewIndex);
+                return cardIndex.CompareTo(other.cardIndex);
             }
         }
     }

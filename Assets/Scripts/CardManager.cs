@@ -23,6 +23,8 @@ public class CardManager : MonoBehaviour
     public Transform heapPos;           //牌堆位置
     public Transform[] playerHeapPos;    //玩家牌堆位置
     public CardManagerStates cardManagerState;  //卡牌回合状态
+    public List<CardInfo> currentCardInfos = new List<CardInfo>();  //当前出牌组合
+    public int notFollowIndex = 0;  //不跟累计，如果=2，则对手要不起，继续出牌
 
     private string[] cardNames;  //所有牌集合
     private int termStartIndex;  //回合开始玩家索引
@@ -263,6 +265,7 @@ public class CardManager : MonoBehaviour
 
         SetNextPlayer();
         Players[termCurrentIndex].ToFollowing();
+        notFollowIndex = 0;
     }
     /// <summary>
     /// 玩家不出
@@ -276,6 +279,7 @@ public class CardManager : MonoBehaviour
 
         SetNextPlayer();
         Players[termCurrentIndex].ToFollowing();
+        notFollowIndex++;
     }
     #endregion
 
