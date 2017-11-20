@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Models.FollowCards;
+using UnityEngine;
 
 public class PlayerOther : Player
 {
@@ -20,16 +21,19 @@ public class PlayerOther : Player
             }
             if (CardManager._instance.cardManagerState == CardManagerStates.Playing)
             {
-                if (Input.GetKeyDown(KeyCode.Q))    //出牌
+                if (Input.GetKeyDown(KeyCode.Q)) //出牌
                 {
-                    var rd1 = Random.Range(0, cardInfos.Count);
-                    cardInfos[rd1].isSelected = true;
-
-                    ForFollow();
-                }
-                if (Input.GetKeyDown(KeyCode.W))    //不出
-                {
-                    NotFollow();
+                    var singleCards = new SingleCards();
+                    var cardInfos = singleCards.FindBigger(this.cardInfos, CardManager._instance.currentCardInfos);
+                    if (cardInfos != null)
+                    {
+                        cardInfos.ForEach(s => s.isSelected = true);
+                        ForFollow();
+                    }
+                    else
+                    {
+                        NotFollow();
+                    }
                 }
             }
         }

@@ -198,6 +198,8 @@ public abstract class Player : MonoBehaviour
         cardInfos = cardInfos.Where(s => !s.isSelected).ToList();
 
         CardManager._instance.ForFollow();
+        CardManager._instance.currentCardInfos = selectedCards;
+
         isMyTerm = false;
     }
     /// <summary>
@@ -210,6 +212,7 @@ public abstract class Player : MonoBehaviour
 
         CardManager._instance.NotFollow();
         isMyTerm = false;
+
     }
     /// <summary>
     /// 销毁出牌对象
