@@ -74,8 +74,8 @@ namespace Assets.Scripts.Models.FollowCards
                         {
                             return mayBiggerCardInfos;
                         }
-                        return null;
                     }
+                    return null;
                 }
                 return null;
             }
