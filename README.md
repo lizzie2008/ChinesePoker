@@ -1,2 +1,2 @@
 # ChinesePoker
-ChinesePoker1
+ChinesePoker2
